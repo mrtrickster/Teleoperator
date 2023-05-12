@@ -9,6 +9,9 @@ error_reporting(E_ALL);
 // Load composer
 require_once __DIR__ . '/vendor/autoload.php';
 
+// Load all configuration options
+$config = require __DIR__ . 'config.php';
+
 use Longman\TelegramBot\Request;
 use Exception;
 use Longman\TelegramBot\Commands\Command;
@@ -20,11 +23,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
 
-$pdo = new PDO('mysql:host=localhost;dbname=u682924700_teleoperator', 'u682924700_teleoperator', '7r4n5hUm4n15m.1nc');
-
-$bot_api_key  = '5966059872:AAHta4EER_xeCpisYrpDaxFWQMnTsAzLhWk';
-$bot_username = 'TeleoperatorBot';
-
+$pdo = new PDO('mysql:host=' . $config['mysql']['host'] . ';dbname=' . $config['mysql']['database'], $config['mysql']['user'], $config['mysql']['password']);
 
 const IDLE = 0;
 const MENU = 1;
@@ -103,11 +102,11 @@ class User {
 $User = new User();
 
 try {
-    $telegram = new Longman\TelegramBot\Telegram($bot_api_key, $bot_username);
+    $telegram = new Longman\TelegramBot\Telegram($config['api_key'], $config['bot_username']);
 
-    Longman\TelegramBot\TelegramLog::initErrorLog(__DIR__ . "/{$bot_username}_error.log");
-    Longman\TelegramBot\TelegramLog::initDebugLog(__DIR__ . "/{$bot_username}_debug.log");
-    Longman\TelegramBot\TelegramLog::initUpdateLog(__DIR__ . "/{$bot_username}_update.log");
+    Longman\TelegramBot\TelegramLog::initErrorLog(__DIR__ . "/{$config['bot_username']}_error.log");
+    Longman\TelegramBot\TelegramLog::initDebugLog(__DIR__ . "/{$config['bot_username']}_debug.log");
+    Longman\TelegramBot\TelegramLog::initUpdateLog(__DIR__ . "/{$config['bot_username']}_update.log");
 
     $telegram->enableLimiter();
     
