@@ -36,7 +36,6 @@ const REGISTERED = 7;
 
 $file = '';
 $user_id = 0;
-$user_telegram_id = 0;
 $user_realname = '';
 $user_email = '';
 $user_phone = '';
@@ -46,7 +45,9 @@ class User {
     public $pdo;
 
     public $state = 0;
-    public $user_id;
+    public $user_id = 0;
+    public $telegram_id = 0;
+
     public $telegram_name;
     public $first_name;
     public $email;
@@ -65,12 +66,10 @@ class User {
 
     public function greeting($chat_Id) {
         Request::sendMessage(['chat_id' => $chat_Id, 'text' => "Добро пожаловать в Bot Studio!\nПредлагаем вашему вниманию коллекцию telegram-ботов на все случаи жизни.\nДля просмотра каталога ботов нажмите /catalog"]);
-        if (isset($m_From_Id)) {
-            if (if_user_exist()) {
-                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "User already exists in the database."]);
-            } else {
-                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "User not found in the database."]);
-            }
+        if (if_user_exist()) {
+            Request::sendMessage(['chat_id' => $chat_Id, 'text' => "User already exists in the database."]);
+        } else {
+            Request::sendMessage(['chat_id' => $chat_Id, 'text' => "User not found in the database."]);
         }
     }
     
@@ -121,7 +120,7 @@ class User {
     public function if_user_exist() {
         // Check if user exists in the database
         $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE telegram_id = :m_From_Id');
-        $stmt->bindParam(':m_From_Id', $m_From_Id);
+        $stmt->bindParam(':m_From_Id', $this->telegram_id);
         $stmt->execute();
         return($stmt->fetchColumn() > 0);
     }
@@ -153,8 +152,8 @@ try {
                 if (isset($m_From)) {
                     $m_From_Id = $m_From->getId();
                     if (isset($m_From_Id)) {
-                        $user_telegram_id = $m_From_Id;
-                        $file = 'users/' . $user_telegram_id . '.txt';
+                        $User->telegram_id = $m_From_Id;
+                        $file = 'users/' . $User->telegram_id . '.txt';
                         $file_content = file_get_contents($file);
                         if (isset($file_content)) {
                             $User->state = $file_content;
