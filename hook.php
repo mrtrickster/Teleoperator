@@ -43,7 +43,8 @@ $user_phone = '';
 
 
 class User {
-    
+    public $pdo;
+
     public $state = 0;
     public $user_id;
     public $telegram_name;
@@ -53,6 +54,17 @@ class User {
     
     public function __construct() {
         echo "User created";
+    }
+
+    public function set_state($new_state) {
+        $this->state = $new_state;
+        switch ($this->state) {
+            
+        }
+    }
+
+    public function greeting() {
+
     }
     
     public function registration() {
@@ -96,6 +108,16 @@ class User {
                 Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Ваш номер телефона: " . $user_phone . "! Спасибо за регистрацию, теперь вам доступен Личный кабинет."]);
                 break;
         }
+    }
+
+    //
+
+    public function if_user_exist() {
+        // Check if user exists in the database
+        $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE telegram_id = :m_From_Id');
+        $stmt->bindParam(':m_From_Id', $m_From_Id);
+        $stmt->execute();
+        return($stmt->fetchColumn() > 0);
     }
 }
 
@@ -268,13 +290,7 @@ try {
                                             case "/start":
                                                 Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Добро пожаловать в Bot Studio!\nПредлагаем вашему вниманию коллекцию telegram-ботов на все случаи жизни.\nДля просмотра каталога ботов нажмите /catalog"]);
                                                 if (isset($m_From_Id)) {
-                                                    // Check if user exists in the database
-                                                    $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE telegram_id = :m_From_Id');
-                                                    $stmt->bindParam(':m_From_Id', $m_From_Id);
-                                                    $stmt->execute();
-                                                    $userExists = ($stmt->fetchColumn() > 0);
-                                                    
-                                                    if ($userExists) {
+                                                    if ($User->if_user_exist()) {
                                                         Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "User already exists in the database."]);
                                                     } else {
                                                         Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "User not found in the database."]);
@@ -285,10 +301,8 @@ try {
                                                 Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Выберите интересующий вас пункт меню:\n- Регистрация /registration\n- Каталог ботов /catalog\n- Инструкция /help"]);
                                                 break;
                                             case "/registration":
-                                                if (isset($m_From_Id)) {
-                                                    $User->state = REGISTRATION;
-                                                    $User->registration();
-                                                }
+                                                $User->state = REGISTRATION;
+                                                $User->registration();
                                                 break;
                                             case "/help":
                                                 Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Инструкция."]);
