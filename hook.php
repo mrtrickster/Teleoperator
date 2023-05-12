@@ -10,7 +10,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/vendor/autoload.php';
 
 // Load all configuration options
-$config = require __DIR__ . 'config.php';
+$config = require __DIR__ . '/config.php';
 
 use Longman\TelegramBot\Request;
 use Exception;
