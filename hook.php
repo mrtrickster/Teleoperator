@@ -74,21 +74,20 @@ class User {
         }
     }
     
-    public function registration() {
+    public function registration($chat_Id) {
         global $file;
-        global $m_c_Id;
         global $m_Text;
         global $user_realname;
         global $user_email;
         global $user_phone;
-        Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Приступаем к регистрации: ". $this->state]);
+        //Request::sendMessage(['chat_id' => $chat_Id, 'text' => "Приступаем к регистрации: ". $this->state]);
         switch ($this->state) {
             case REGISTRATION:
                 $this->state = REG_STEP1;
                 if (isset($file)) {
                     file_put_contents($file, $this->state);
                 }
-                Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Для начала регистрации введите своё имя:"]);
+                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "Для начала регистрации введите своё имя:"]);
                 break;
             case REG_STEP1:
                 $user_realname = $m_Text;
@@ -96,7 +95,7 @@ class User {
                 if (isset($file)) {
                     file_put_contents($file, $this->state);
                 }
-                Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Приятно познакомиться, " . $user_realname . "! Теперь введите ваш адрес электронной почты:"]);
+                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "Приятно познакомиться, " . $user_realname . "! Теперь введите ваш адрес электронной почты:"]);
                 break;
             case REG_STEP2:
                 $user_email = $m_Text;
@@ -104,7 +103,7 @@ class User {
                 if (isset($file)) {
                     file_put_contents($file, $this->state);
                 }
-                Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Ваш адрес электронной почты: " . $user_email . "! Для окончания регистрации введите ваш телефонный номер:"]);
+                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "Ваш адрес электронной почты: " . $user_email . "! Для окончания регистрации введите ваш телефонный номер:"]);
                 break;
             case REG_STEP3:
                 $user_phone = $m_Text;
@@ -112,7 +111,7 @@ class User {
                 if (isset($file)) {
                     file_put_contents($file, $this->state);
                 }
-                Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Ваш номер телефона: " . $user_phone . "! Спасибо за регистрацию, теперь вам доступен Личный кабинет."]);
+                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "Ваш номер телефона: " . $user_phone . "! Спасибо за регистрацию, теперь вам доступен Личный кабинет."]);
                 break;
         }
     }
@@ -178,7 +177,7 @@ try {
                 if (isset($m_Chat)) {
                     $m_c_Id = $m_Chat->getId();
                     if (isset($m_c_Id)) {
-                        Request::sendMessage(['chat_id' => $m_c_Id, 'text' => json_encode($update, JSON_PRETTY_PRINT) . "\n\ncurrent state: " . $User->state]);
+                        Request::sendMessage(['chat_id' => $m_c_Id, 'text' => json_encode($update, JSON_PRETTY_PRINT)]);
                     }
                 }
                 $m_Text = $message->getText();
@@ -302,7 +301,7 @@ try {
                                                 break;
                                             case "/registration":
                                                 $User->state = REGISTRATION;
-                                                $User->registration();
+                                                $User->registration($m_c_Id);
                                                 break;
                                             case "/help":
                                                 Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Инструкция."]);
