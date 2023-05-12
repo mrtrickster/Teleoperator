@@ -2,9 +2,8 @@
 // Load composer
 require __DIR__ . '/vendor/autoload.php';
 
-$bot_api_key  = '5966059872:AAHta4EER_xeCpisYrpDaxFWQMnTsAzLhWk';
-$bot_username = 'TeleoperatorBot';
-$hook_url     = 'https://livebot.me/bots/Teleoperator/v01/hook.php';
+// Load all configuration options
+$config = require __DIR__ . '/config.php';
 
 try {
     // Create Telegram API object
