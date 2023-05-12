@@ -118,6 +118,7 @@ class User {
     //
 
     public function if_user_exist() {
+        global $pdo;
         // Check if user exists in the database
         $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE telegram_id = :m_From_Id');
         $stmt->bindParam(':m_From_Id', $this->telegram_id);
