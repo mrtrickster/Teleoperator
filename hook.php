@@ -63,8 +63,15 @@ class User {
         }
     }
 
-    public function greeting() {
-
+    public function greeting($chat_Id) {
+        Request::sendMessage(['chat_id' => $chat_Id, 'text' => "Добро пожаловать в Bot Studio!\nПредлагаем вашему вниманию коллекцию telegram-ботов на все случаи жизни.\nДля просмотра каталога ботов нажмите /catalog"]);
+        if (isset($m_From_Id)) {
+            if (if_user_exist()) {
+                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "User already exists in the database."]);
+            } else {
+                Request::sendMessage(['chat_id' => $chat_Id, 'text' => "User not found in the database."]);
+            }
+        }
     }
     
     public function registration() {
@@ -288,14 +295,7 @@ try {
                                 
                                         switch ($m_e_Text) {
                                             case "/start":
-                                                Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Добро пожаловать в Bot Studio!\nПредлагаем вашему вниманию коллекцию telegram-ботов на все случаи жизни.\nДля просмотра каталога ботов нажмите /catalog"]);
-                                                if (isset($m_From_Id)) {
-                                                    if ($User->if_user_exist()) {
-                                                        Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "User already exists in the database."]);
-                                                    } else {
-                                                        Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "User not found in the database."]);
-                                                    }
-                                                }
+                                                $User->greeting($m_c_Id);
                                                 break;
                                             case "/menu":
                                                 Request::sendMessage(['chat_id' => $m_c_Id, 'text' => "Выберите интересующий вас пункт меню:\n- Регистрация /registration\n- Каталог ботов /catalog\n- Инструкция /help"]);
